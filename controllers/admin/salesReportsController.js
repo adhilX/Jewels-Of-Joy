@@ -61,7 +61,8 @@ const ExcelJS = require('exceljs');
                 nextPage: parseInt(page) + 1,
                 prevPage: parseInt(page) - 1,
                 totalOrders
-            }
+            },
+            activePage: 'dashboard'
         });
     } catch (error) {
         console.error('Error in getSalesReports:', error);

@@ -1,8 +1,9 @@
 const Product = require('../../models/productSchema')
-const category = require('../../models/categorySchema');
 const User = require("../../models/userSchema");
 const Wishlist = require('../../models/wishlistSchema');
 const Brand = require('../../models/brandSchema');
+const { getBestOffer } = require('../../utils/offerUtils');
+
 const productDetails = async (req, res) => {
     try {
         const userId = req.session.user;
@@ -16,11 +17,8 @@ const productDetails = async (req, res) => {
 
         const findCategory = product.category;
         const cat = findCategory.name;
-        const productOffer = product.productOffer || 0;
-        const categoryOffer = product.category?.categoryOffer || 0;
-        const bestOffer = Math.max(productOffer, categoryOffer);
-        product.regularPrice= product.salePrice 
-        product.salePrice = product.salePrice - (product.salePrice * bestOffer / 100);
+        const {bestOffer,discountedPrice} = await getBestOffer(product);
+        product.salePrice = discountedPrice
 
         // Get related products
         const relatedProducts = await Product.find({
@@ -35,10 +33,8 @@ const productDetails = async (req, res) => {
                 isInWishlist: wishlist?.products.some(item => item.productId.toString() === product._id.toString())
             };
         });
-          const brand= await Brand.findOne({brandName:product.brand});
-        
-        // console.log('find category', relatedProductsWithWishlist);
- 
+        //   const brand= await Brand.findOne({brandName:product.brand});
+         
         return res.render('product-details', {
             user: userData,
             product: {
@@ -49,7 +45,7 @@ const productDetails = async (req, res) => {
             category: cat,
             relatedProducts: relatedProductsWithWishlist,
             offer:bestOffer,
-            brand
+            // brand
         });
 
     } catch (error) {

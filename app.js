@@ -48,7 +48,6 @@ app.use(express.static(path.join(__dirname,'public')))
 app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 
  app.use('/',userRouter)
-//  app.use('/*',userRouter)
  app.use('/admin',adminRouter)
  
 

@@ -33,7 +33,8 @@ const customerInfo = async (req,res)=>{
                 total: count,
                 currentPage: page,
                 totalPage,
-                search, // Pass the search query back to the template
+                search,
+                activePage: 'customs'
             });
         } catch (error) {
             console.error('Error in search and pagination:', error);

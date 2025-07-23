@@ -49,11 +49,11 @@ router.get('/editcategory',adminAuth,categoryController.geteditcategory)
 router.post('/editcategory/:id',adminAuth,categoryController.editcategory)
 
 //brand Management
-router.get('/brands',adminAuth,brandcontroller.getBrandpage)
-router.post('/addBrand',adminAuth,uploads.single('image'),brandcontroller.addBrand)
-router.get('/blockBrand',adminAuth,brandcontroller.blockBrand)
-router.get('/unBlockBrand',adminAuth,brandcontroller.unBlockBrand)
-router.delete ('/deleteBrand',adminAuth,brandcontroller.deleteBrand)
+// router.get('/brands',adminAuth,brandcontroller.getBrandpage)
+// router.post('/addBrand',adminAuth,uploads.single('image'),brandcontroller.addBrand)
+// router.get('/blockBrand',adminAuth,brandcontroller.blockBrand)
+// router.get('/unBlockBrand',adminAuth,brandcontroller.unBlockBrand)
+// router.delete ('/deleteBrand',adminAuth,brandcontroller.deleteBrand)
 
 // product management
 router.get('/addProducts',adminAuth,productController.getProductAddPage)
@@ -73,11 +73,11 @@ router.post('/update-order-status',adminAuth,orderController.updateOrderStatus)
 router.patch('/order/return/:orderId',adminAuth,orderController.processReturnRequest)
 
 //coupon management
-router.get('/coupon',adminAuth,couponController.getCouponList)
-router.post('/createCoupon',adminAuth,couponController.createCoupon)
-router.patch('/toggleCouponStatus/:id',adminAuth,couponController.toggleCouponStatus)
-router.get('/editCoupon/',adminAuth,couponController.loadeditCoupon)
-router.post('/posteditCoupon',adminAuth,couponController.updateCoupon)
+// router.get('/coupon',adminAuth,couponController.getCouponList)
+// router.post('/createCoupon',adminAuth,couponController.createCoupon)
+// router.patch('/toggleCouponStatus/:id',adminAuth,couponController.toggleCouponStatus)
+// router.get('/editCoupon/',adminAuth,couponController.loadeditCoupon)
+// router.post('/posteditCoupon',adminAuth,couponController.updateCoupon)
 //salesReport management
 router.get('/salesReport',adminAuth,salesReportsController.getSalesReports)
 router.get('/salesReport/download/:format',adminAuth,salesReportsController.downloadReport)

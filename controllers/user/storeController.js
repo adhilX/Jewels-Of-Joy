@@ -3,7 +3,7 @@ const Product =require('../../models/productSchema');
 const Brand = require("../../models/brandSchema");
 const User= require('../../models/userSchema')
 const Wishlist = require('../../models/wishlistSchema');
-
+const { getBestOffer } = require('../../utils/offerUtils');
 
  const getShopPage = async (req, res) => {
   try {
@@ -32,8 +32,7 @@ const Wishlist = require('../../models/wishlistSchema');
       category: categoryIds,
       brand: brandNames
     });
-     
-
+    
      const totalProducts = await Product.countDocuments(filter);
     const limit = 12;
     const totalPages = Math.ceil(totalProducts / limit);
@@ -48,26 +47,17 @@ const Wishlist = require('../../models/wishlistSchema');
       .limit(limit)
       .lean();
 
-
- 
      const productsWithOffers = products.map(product => {
-      const productOffer = product.productOffer || 0;
-      const categoryOffer = product.category?.categoryOffer || 0;
-      const bestOffer = Math.max(productOffer, categoryOffer);
+           const {bestOffer,discountedPrice} =  getBestOffer(product);
 
       let finalProduct = {
         ...product,
         bestOffer,
-        offerType: bestOffer === productOffer ? "Product Offer" : "Category Offer",
         productName: product.productName.trim()
       };
 
-      if (bestOffer > 0) {
-        const offerPrice = product.salePrice - (product.salePrice * (bestOffer / 100));
-        finalProduct.offerPrice = Math.round(offerPrice);
-      }
-
-      return finalProduct;
+      if (bestOffer > 0)finalProduct.offerPrice = discountedPrice
+   return finalProduct;
     });
 
      const categories = await Category.find({ isListed: true }).lean();
@@ -128,10 +118,8 @@ const Wishlist = require('../../models/wishlistSchema');
   }
 };
 
-
 const buldProductsQuery = (query) => {
   const { category, brand, price, availability, search, sort } = query;
-  console.log('Building query with:', query);
 
   let filter = {};
   let sortOption = {};
@@ -149,13 +137,11 @@ const buldProductsQuery = (query) => {
   // Price filter
   if (price) {
     const priceRanges = Array.isArray(price) ? price : price.split(',');
-    console.log('Processing price ranges:', priceRanges);
 
     const priceConditions = priceRanges.map(range => {
       if (range === '100001') {
          return { salePrice: { $gte: 100001 } };
       }
-      
       const [min, max] = range.split('-').map(Number);
       if (!isNaN(min) && !isNaN(max)) {
         return { salePrice: { $gte: min, $lte: max } };

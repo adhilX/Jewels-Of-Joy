@@ -4,7 +4,6 @@ const Brand = require('../../models/brandSchema');
 const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
 
-// Helper function to get week number
 function getWeekNumber(d) {
     d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
@@ -38,7 +37,7 @@ const loadDashboard = async (req, res) => {
                     startDate.setFullYear(startDate.getFullYear() - 5);
                     break;
                 case 'monthly':
-                    startDate.setMonth(startDate.getMonth() - 11); // Last 12 months
+                    startDate.setMonth(startDate.getMonth() - 11); 
                     break;
                 case 'weekly':
                     startDate.setDate(startDate.getDate() - 90);
@@ -160,11 +159,6 @@ const loadDashboard = async (req, res) => {
                 },
                 { $sort: { totalSales: -1 } }
             ]);
-
-            console.log('Date Range:', { startDate, endDate });
-            console.log('Top Products:', topProducts);
-            console.log('Top Brands:', topBrands);
-            console.log('Category Data:', categoryData);
 
             // Get sales data with proper date grouping
             let salesData = await Order.aggregate([
@@ -314,7 +308,8 @@ const loadDashboard = async (req, res) => {
                 topProducts,
                 topBrands,
                 timeFrame,
-                admin: true
+                admin: true,
+                activePage:'dashboard'
             });
         } else {
             res.redirect('/admin/login');
@@ -1026,10 +1021,6 @@ const getDashboardData = async (req, res) => {
         }
 
         salesData = processedData;
-
-        console.log('API - Sending dashboard data');
-        console.log('API - Top Products:', topProducts);
-        console.log('API - Top Brands:', topBrands);
 
         // Return JSON response for API calls
         if (req.xhr || req.headers.accept?.indexOf('json') > -1) {

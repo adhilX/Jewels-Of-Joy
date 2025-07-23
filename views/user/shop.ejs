@@ -229,7 +229,7 @@
                 <button 
                   type="button" 
                   class="btn <%= (selectedCategories && selectedCategories.length > 0) || 
-                               (selectedBrands && selectedBrands.length > 0) || 
+                              //  (selectedBrands && selectedBrands.length > 0) || 
                                (selectedPrice && selectedPrice.length > 0) || 
                                selectedAvailability ? 'btn-success' : 'btn-dark' %>"
                   data-bs-toggle="modal" 
@@ -237,12 +237,12 @@
                 >
                   <i class="bi bi-funnel"></i>
                   <%= (selectedCategories && selectedCategories.length > 0) || 
-                      (selectedBrands && selectedBrands.length > 0) || 
+                      // (selectedBrands && selectedBrands.length > 0) || 
                       (selectedPrice && selectedPrice.length > 0) || 
                       selectedAvailability ? 'Filters Applied' : 'Filter Products' %>
                 </button>
                 <% if ((selectedCategories && selectedCategories.length > 0) || 
-                      (selectedBrands && selectedBrands.length > 0) || 
+                      // (selectedBrands && selectedBrands.length > 0) || 
                       (selectedPrice && selectedPrice.length > 0) || 
                       selectedAvailability || search) { %>
                   <a href="/shop" class="btn btn-outline-danger ms-2">
@@ -295,31 +295,31 @@
                         </div>
 
                         <!-- Brand Filter -->
-                        <div class="filter-group">
-                            <div class="filter-group-title">
-                                Brands
-                                <span class="filter-count"><%= brands.length %></span>
-                            </div>
+                        // <div class="filter-group">
+                        //     <div class="filter-group-title">
+                        //         Brands
+                        //         <span class="filter-count"><%= brands.length %></span>
+                        //     </div>
                             <% if (brands && brands.length > 0) { %>
                                 <% brands.forEach(brand => { %>
-                                    <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="checkbox"
-                                            name="brand"
-                                            value="<%= brand.brandName %>"
-                                            id="brand<%= brand._id %>"
-                                            <%= selectedBrands && selectedBrands.includes(brand.brandName) ? 'checked' : '' %>
-                                        />
-                                        <label class="form-check-label" for="brand<%= brand._id %>">
-                                            <%= brand.brandName %>
-                                        </label>
-                                    </div>
+                                    // <div class="form-check">
+                                    //     <input
+                                    //         class="form-check-input"
+                                    //         type="checkbox"
+                                    //         name="brand"
+                                    //         value="<%= brand.brandName %>"
+                                    //         id="brand<%= brand._id %>"
+                                    //         <%= selectedBrands && selectedBrands.includes(brand.brandName) ? 'checked' : '' %>
+                                    //     />
+                                    //     <label class="form-check-label" for="brand<%= brand._id %>">
+                                    //         <%= brand.brandName %>
+                                    //     </label>
+                                    // </div>
                                 <% }); %>
                             <% } else { %>
-                                <div class="text-muted">No brands available</div>
+                                // <div class="text-muted">No brands available</div>
                             <% } %>
-                        </div>
+                        // </div>
 
                         <!-- Price Range Filter -->
                         <div class="filter-group">
@@ -598,81 +598,81 @@ filterModal.addEventListener('hidden.bs.modal', function () {
     </section>
    
 <!-- Brands Section -->
-<div class="container-fluid bg-light section-padding-sm py-6">
-  <div class="text-center mb-5" data-aos="fade-up">
-    <h2 class="display-4 fw-bold mb-3">Trusted Brands</h2>
-    <p class="lead text-muted">We partner with the world's leading photography brands to bring you authentic, high-quality equipment.</p>
-    <p class="mb-4">Our strong relationships with manufacturers ensure you get genuine products with full warranty coverage. Each brand in our collection is carefully selected for its commitment to innovation, quality, and reliability in the photography industry.</p>
-  </div>
+// <div class="container-fluid bg-light section-padding-sm py-6">
+//   <div class="text-center mb-5" data-aos="fade-up">
+//     <h2 class="display-4 fw-bold mb-3">Trusted Brands</h2>
+//     <p class="lead text-muted">We partner with the world's leading photography brands to bring you authentic, high-quality equipment.</p>
+//     <p class="mb-4">Our strong relationships with manufacturers ensure you get genuine products with full warranty coverage. Each brand in our collection is carefully selected for its commitment to innovation, quality, and reliability in the photography industry.</p>
+//   </div>
   
-  <div class="marquee-wrapper">
-      <div class="marquee">
-          <!-- First set of brands -->
-          <div class="brand-card">
-              <img src="/shuttercart-imags/Sony_logo.svg.png" alt="Sony" class="brand-logo img-fluid">
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Canon</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Nikon</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Fujifilm</span>
-          </div>
-          <div class="brand-card">
-              <img src="/shuttercart-imags/dj8808d13d-dji-logo-dji-official-website.png" alt="DJI" class="brand-logo img-fluid">
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Panasonic</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">GoPro</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Leica</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Olympus</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Sigma</span>
-          </div>
+//   <div class="marquee-wrapper">
+//       <div class="marquee">
+//           <!-- First set of brands -->
+//           <div class="brand-card">
+//               <img src="/shuttercart-imags/Sony_logo.svg.png" alt="Sony" class="brand-logo img-fluid">
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Canon</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Nikon</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Fujifilm</span>
+//           </div>
+//           <div class="brand-card">
+//               <img src="/shuttercart-imags/dj8808d13d-dji-logo-dji-official-website.png" alt="DJI" class="brand-logo img-fluid">
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Panasonic</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">GoPro</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Leica</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Olympus</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Sigma</span>
+//           </div>
 
-          <!-- Duplicate set for seamless loop -->
-          <div class="brand-card">
-              <img src="/shuttercart-imags/Sony_logo.svg.png" alt="Sony" class="brand-logo img-fluid">
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Canon</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Nikon</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Fujifilm</span>
-          </div>
-          <div class="brand-card">
-              <img src="/shuttercart-imags/dj8808d13d-dji-logo-dji-official-website.png" alt="DJI" class="brand-logo img-fluid">
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Panasonic</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">GoPro</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Leica</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Olympus</span>
-          </div>
-          <div class="brand-card">
-              <span class="brand-text">Sigma</span>
-          </div>
-      </div>
-  </div>
-</div>
+//           <!-- Duplicate set for seamless loop -->
+//           <div class="brand-card">
+//               <img src="/shuttercart-imags/Sony_logo.svg.png" alt="Sony" class="brand-logo img-fluid">
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Canon</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Nikon</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Fujifilm</span>
+//           </div>
+//           <div class="brand-card">
+//               <img src="/shuttercart-imags/dj8808d13d-dji-logo-dji-official-website.png" alt="DJI" class="brand-logo img-fluid">
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Panasonic</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">GoPro</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Leica</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Olympus</span>
+//           </div>
+//           <div class="brand-card">
+//               <span class="brand-text">Sigma</span>
+//           </div>
+//       </div>
+//   </div>
+// </div>
 
 <style>
   .marquee-wrapper {

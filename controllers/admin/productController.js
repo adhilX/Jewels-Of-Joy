@@ -10,10 +10,11 @@ const product = require("../../models/productSchema");
 const getProductAddPage = async (req, res) => {
   try {
     const category = await Category.find({ isListed: true });
-    const brand = await Brand.find({ isBlocked: false });
+    // const brand = await Brand.find({ isBlocked: false });
     return res.render("product-add", {
       cat: category,
-      brand: brand,
+      // brand: brand,
+      activePage: "products",
     });
   } catch (error) {
     res.redirect("/admin/pageerror");
@@ -73,10 +74,10 @@ const addProducts = async (req, res) => {
     const newProduct = new Product({
       productName: productData.productName,
       description: productData.description,
-      brand: productData.brand,
+      // brand: productData.brand,
       category: category._id,
       regularPrice: productData.regularPrice,
-      salePrice: productData.salePrice,
+      salePrice: productData.regularPrice,
       quantity: productData.quantity,
       productImage: processedImages,
       status: "Available",
@@ -106,7 +107,7 @@ const getAllProducts = async (req, res) => {
     const productQuery = {
       $or: [
         { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
-        { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
+        // { category: { $regex: new RegExp(".*" + search + ".*", "i") } },
       ],
     };
 
@@ -119,7 +120,7 @@ const getAllProducts = async (req, res) => {
     const count = await Product.find(productQuery).countDocuments();
 
     const category = await Category.find({ isListed: true });
-    const brand = await Brand.find({ isBlocked: false });
+    // const brand = await Brand.find({ isBlocked: false });
 
     res.render("products", {
       data: productData,
@@ -127,7 +128,8 @@ const getAllProducts = async (req, res) => {
       currectPage: page,
       totalPages: Math.ceil(count / limit),
       cat: category,
-      brand: brand,
+      // brand: brand,
+      activePage: "products",
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -188,13 +190,14 @@ const getEditProducts = async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    const brand = await Brand.find();
+    // const brand = await Brand.find();
     const category = await Category.find({ isListed: true });
 
     return res.render("edit-Product", {
       product,
       cat: category,
-      brand,
+      // brand,
+      activePage: "products",
     });
   } catch (error) {
     console.error("Error in getEditProduct:", error.message);
@@ -276,7 +279,7 @@ const editProducts = async (req, res) => {
     const updateFields = {
       productName: data.productName,
       description: data.description,
-      brand: data.brand,
+      // brand: data.brand,
       category: category._id,
       regularPrice: data.regularPrice,
       salePrice: data.salePrice,

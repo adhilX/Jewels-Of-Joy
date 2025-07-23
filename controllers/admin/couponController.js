@@ -13,7 +13,6 @@ const getCouponList = async (req, res) => {
 
 const createCoupon = async (req, res) => {
   try {
-    console.log(req.body);
     const { couponName, startDate, endDate, offerPrice, minimumPrice } = req.body;
 
     // Validate required fields

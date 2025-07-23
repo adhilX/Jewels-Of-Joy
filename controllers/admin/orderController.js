@@ -28,6 +28,7 @@ const getOrderList = async (req, res) => {
            limit,
            hasNextPage: page < totalPages,
            hasPrevPage: page > 1,
+           activePage: 'orders'
                 });
     
     } catch (error) {
@@ -52,7 +53,6 @@ const getOrderDetailsPage = async (req, res) => {
                 }
             })
             .populate('address');
-    
 
         if (!order) {
             return res.status(404).send('Order not found');
@@ -65,12 +65,12 @@ const getOrderDetailsPage = async (req, res) => {
         const shippingCost = order.shippingCost || 0;  
         const grandTotal = subtotal + shippingCost
             
-      
         res.render('orderDetails', {
             order,
             subtotal,
             shippingCost,
             grandTotal,
+            activePage: 'orders'
         });
     } catch (error) {
         console.error('Error fetching order details:', error);
