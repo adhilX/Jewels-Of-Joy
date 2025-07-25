@@ -1,5 +1,6 @@
 const nocache = require('nocache'); 
  const express = require('express')
+ const morgan = require('morgan')
 const app = express()
 
 const path = require('path')
@@ -17,7 +18,7 @@ app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 
 app.use(nocache());
-
+// app.use(morgan('dev'))
 app.use(session({
    secret: process.env.SESSION_SECRET,
    resave: false,

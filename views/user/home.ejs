@@ -68,7 +68,7 @@
     <div class="row g-4">
       <div class="col-lg-4">
         <div class="category-card position-relative rounded-4 overflow-hidden">
-          <img src="../landing-imags/shop-by-category-NECKLACE.jpg" alt="NECKLACE" class="w-100 h-100 object-fit-cover">
+          <img src="../landing-imags/WhatsApp Image 2025-07-23 at 4.08.22 PM.jpeg" alt="NECKLACE" class="w-100 h-100 object-fit-cover">
           <div class="category-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
             <div class="text-center text-white">
               <h3 class="mb-3">NECKLACE</h3>
@@ -82,7 +82,7 @@
           <img src="../landing-imags/shop-by-category-BANGLE.jpeg" alt="BANGLELE" class="w-100 h-100 object-fit-cover">
           <div class="category-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
             <div class="text-center text-white">
-              <h3 class="mb-3">BANGLELE</h3>
+              <h3 class="mb-3">BANGLE BRACELETS</h3>
               <a href="/shop?category=banglele" class="btn btn-outline-light rounded-pill px-4">Shop Now</a>
             </div>
           </div>
@@ -90,7 +90,7 @@
       </div>
       <div class="col-lg-4">
         <div class="category-card position-relative rounded-4 overflow-hidden">
-          <img src="../landing-imags/shop-by-cateogry-BRACELETS.jpg" alt="BRACELETS" class="w-100 h-100 object-fit-cover">
+          <img src="../landing-imags/WhatsApp Image 2025-07-23 at 4.08.38 PM.jpeg" alt="BRACELETS" class="w-100 h-100 object-fit-cover">
           <div class="category-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
             <div class="text-center text-white">
               <h3 class="mb-3">BRACELETS</h3>
@@ -108,7 +108,7 @@
   <div class="container">
     <div class="row align-items-center mb-4">
       <div class="col">
-        <h2 class="mb-0">Special Products</h2>
+        <h2 class="mb-0">Latest Products</h2>
       </div>
       <div class="col-auto">
         <ul class="nav nav-pills" id="specialProductsTabs" role="tablist">
@@ -126,13 +126,13 @@
         <div class="row g-4">
           <% products.forEach(product => { %>
             <div class="col-lg-3 col-md-4 col-6">
-              <div class="product-card h-100 rounded-4 overflow-hidden bg-white shadow-sm">
+              <div class="product-card rounded-4 overflow-hidden bg-white shadow-sm">
                 <div class="product-image position-relative">
                   <div class="badge bg-danger position-absolute top-0 start-0 m-3">NEW</div>
                   <a href="/productDetails?id=<%= product._id %>">
-                    <img src="<%= product.productImage[0] %>" class="w-100 object-fit-cover primary-img" alt="<%= product.productName %>" style="height: 280px;">
+                    <img src="<%= product.productImage[0] %>" class="w-100 object-fit-cover primary-img" alt="<%= product.productName %>">
                     <% if(product.productImage[1]) { %>
-                      <img src="<%= product.productImage[1] %>" class="w-100 object-fit-cover secondary-img" alt="<%= product.productName %>" style="height: 280px;">
+                      <img src="<%= product.productImage[1] %>" class="w-100 object-fit-cover secondary-img" alt="<%= product.productName %>">
                     <% } %>
                   </a>
                   <div class="product-actions position-absolute bottom-0 start-0 w-100 p-3 bg-white bg-opacity-75">
@@ -541,81 +541,6 @@
 </section>
 
 <!-- Brands Section -->
-<div class="container-fluid bg-light section-padding-sm py-6 ">
-    <div class="text-center mb-5" data-aos="fade-up">
-      <h2 class="display-4 fw-bold mb-3">Trusted Brands</h2>
-      <p class="lead text-muted">We partner with the world's leading photography brands to bring you authentic, high-quality equipment.</p>
-      <p class="mb-4">Our strong relationships with manufacturers ensure you get genuine products with full warranty coverage. Each brand in our collection is carefully selected for its commitment to innovation, quality, and reliability in the photography industry.</p>
-    </div>
-    
-    <div class="marquee-wrapper">
-        <div class="marquee">
-            <!-- First set of brands -->
-            <div class="brand-card">
-                <img src="/shuttercart-imags/Sony_logo.svg.png" alt="Sony" class="brand-logo img-fluid">
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Canon</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Nikon</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Fujifilm</span>
-            </div>
-            <div class="brand-card">
-                <img src="/shuttercart-imags/dj8808d13d-dji-logo-dji-official-website.png" alt="DJI" class="brand-logo img-fluid">
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Panasonic</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">GoPro</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Leica</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Olympus</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Sigma</span>
-            </div>
-
-            <!-- Duplicate set for seamless loop -->
-            <div class="brand-card">
-                <img src="/shuttercart-imags/Sony_logo.svg.png" alt="Sony" class="brand-logo img-fluid">
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Canon</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Nikon</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Fujifilm</span>
-            </div>
-            <div class="brand-card">
-                <img src="/shuttercart-imags/dj8808d13d-dji-logo-dji-official-website.png" alt="DJI" class="brand-logo img-fluid">
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Panasonic</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">GoPro</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Leica</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Olympus</span>
-            </div>
-            <div class="brand-card">
-                <span class="brand-text">Sigma</span>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .marquee-wrapper {

@@ -3,13 +3,15 @@ const User = require('../../models/userSchema');
 const Address =require('../../models/addressSchema')
 const Coupon = require('../../models/couponSchema');
 const Product = require('../../models/productSchema');
-
+const Settings = require('../../models/settingsSchema');
+const {getBestOffer}=require('../../utils/offerUtils')
 
 const renderCheckoutPage = async (req, res) => {
     try {
         const userId = req.session.user;
         const { couponName, couponDiscount } = req.session.appliedCoupon || {};
         const userDetails = await User.findById(userId);
+        const {shippingCost,COD_enabled}=await Settings.findOne()
         
         const cart = await Cart.findOne({ userId }).populate({
             path: "items.productId",
@@ -32,8 +34,8 @@ const renderCheckoutPage = async (req, res) => {
         const cartItemsWithOffers = cart.items.map((item) => {
             const product = item.productId;
             const category = product.category;
-            const bestOffer = Math.max(product.productOffer || 0, category.categoryOffer || 0);
-            const salePrice = product.salePrice - (product.salePrice * bestOffer / 100);
+            const {bestOffer,discountedPrice}=getBestOffer(product)
+            const salePrice = discountedPrice;
             const totalPrice = salePrice * item.quantity;
             const itemDiscount = (product.salePrice - salePrice) * item.quantity;
             totalWithoutDiscount += product.salePrice * item.quantity;
@@ -49,14 +51,16 @@ const renderCheckoutPage = async (req, res) => {
           const totalDiscount = cartItemsWithOffers.reduce((sum, item) => sum + parseFloat(item.itemDiscount), 0);
 
           // Calculate final total with coupon discount if applicable
-          const finalTotal = couponDiscount 
+          let finalTotal = couponDiscount 
             ? (totalPriceAfterOffers - couponDiscount).toFixed(2)
             : totalPriceAfterOffers.toFixed(2);
 
+            finalTotal+=shippingCost;
           // Calculate total discount including coupon
           const totalDiscountWithCoupon = couponDiscount 
             ? (totalDiscount + couponDiscount).toFixed(2)
             : totalDiscount.toFixed(2);
+
 
          res.render('checkout', {
             user: userDetails,
@@ -68,7 +72,8 @@ const renderCheckoutPage = async (req, res) => {
             total: totalWithoutDiscount.toFixed(2),
             finalTotal,
             razorpayKey: process.env.RAZORPAY__KEY_ID, // Pass the Razorpay Key
-
+            shippingCost,
+            COD_enabled
         });
     } catch (error) {
         console.error(error);
@@ -130,11 +135,10 @@ const applyCoupon = async (req, res) => {
         cart.items.forEach(item => {
             const product = item.productId;
             const salePrice = product.salePrice * item.quantity;
-            const bestOffer = Math.max(product.productOffer || 0, product.category.categoryOffer || 0);
-            const offerDiscount = (salePrice * bestOffer / 100);
+            const {discountedPrice}=getBestOffer(product)
             
             totalAmount += salePrice;
-            bestOfferDiscount += offerDiscount;
+            bestOfferDiscount += discountedPrice;
         });
 
         const totalAfterOffers = totalAmount - bestOfferDiscount;

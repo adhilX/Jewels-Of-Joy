@@ -4,7 +4,41 @@
     <div class="content-header">
         <h1 class="page-title">Order Management</h1>
     </div>
-
+    <div class="search-container">
+        <div class="search-wrapper">
+            <form action="/admin/orders" method="GET" class="search-form">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="search" 
+                        name="search" 
+                        placeholder="Search using orderId email name..." 
+                        value="<%= search || '' %>"
+                        title="Search for orders using orderId, email or name."
+                        class="search-input"
+                    >
+                    <% if (status) { %>
+                        <input type="hidden" name="status" value="<%= status %>">
+                    <% } %>
+                </div>
+                <button type="submit" class="search-button">Search</button>
+            </form>
+            <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                <div>
+                </div>
+                <select id="statusSelect" class="form-select d-inline-block mb-lg-0 mb-15 mw-200" style="background-color: #262b3c; border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; width: auto; margin-right: 1rem;">
+                    <option value="" <%= !status ? 'selected' : '' %>>All Status</option>
+                    <option value="Pending Payment" <%= status === 'Pending Payment' ? 'selected' : '' %>>Pending Payment</option>
+                    <option value="Placed" <%= status === 'Placed' ? 'selected' : '' %>>Placed</option>
+                    <option value="Rejected" <%= status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                    <option value="Delivered" <%= status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="Cancelled" <%= status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    <option value="Return Request" <%= status === 'Return Request' ? 'selected' : '' %>>Return Request</option>
+                    <option value="Returned" <%= status === 'Returned' ? 'selected' : '' %>>Returned</option>
+                </select>            
+            </div>
+        </div>
+    </div>
     <div class="table-container">
         <table class="order-table">
             <thead>
@@ -64,15 +98,24 @@
     </div>
 
     <div class="pagination">
+        <% 
+            // Helper function to build query string with all current parameters
+            const buildPageUrl = (pageNum) => {
+                let url = `?page=${pageNum}&limit=${limit}`;
+                if (search) url += `&search=${encodeURIComponent(search)}`;
+                if (status) url += `&status=${encodeURIComponent(status)}`;
+                return url;
+            }
+        %>
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>" class="page-link">
+            <a href="<%= buildPageUrl(currentPage - 1) %>" class="page-link">
                 <i class="material-icons md-chevron_left"></i>
             </a>
         <% } %>
 
         <% for(let i = 1; i <= totalPages; i++) { %>
             <% if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) { %>
-                <a href="?page=<%= i %>&limit=<%= limit %>" 
+                <a href="<%= buildPageUrl(i) %>" 
                    class="page-link <%= currentPage == i ? 'active' : '' %>">
                     <%= i %>
                 </a>
@@ -82,7 +125,7 @@
         <% } %>
 
         <% if (currentPage < totalPages) { %>
-            <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>" class="page-link">
+            <a href="<%= buildPageUrl(currentPage + 1) %>" class="page-link">
                 <i class="material-icons md-chevron_right"></i>
             </a>
         <% } %>
@@ -109,6 +152,33 @@
                 }
             });
         });
+    });
+
+    // Add onChange event listener to status select dropdown
+    document.getElementById('statusSelect').addEventListener('change', function() {
+        const selectedStatus = this.value;
+        const currentUrl = new URL(window.location);
+        
+        // Preserve existing search parameter
+        const currentSearch = currentUrl.searchParams.get('search') || '';
+        
+        // Update or remove the status parameter
+        if (selectedStatus && selectedStatus !== '') {
+            currentUrl.searchParams.set('status', selectedStatus);
+        } else {
+            currentUrl.searchParams.delete('status');
+        }
+        
+        // Preserve search if it exists
+        if (currentSearch) {
+            currentUrl.searchParams.set('search', currentSearch);
+        }
+        
+        // Reset to first page when changing status
+        currentUrl.searchParams.set('page', '1');
+        
+        // Redirect to the new URL to refetch data
+        window.location.href = currentUrl.toString();
     });
 </script>
 

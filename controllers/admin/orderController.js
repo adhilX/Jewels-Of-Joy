@@ -1,24 +1,34 @@
-const User = require("../../models/userSchema")
 const Order = require('../../models/orderSchema')
 const Product = require('../../models/productSchema')
-const Wallet = require('../../models/walletSchema') 
 const getOrderList = async (req, res) => {
     try {
          const page = parseInt(req.query.page) || 1; // Default to page 1
+         console.log('query',req.query)
         const limit = parseInt(req.query.limit) || 7;  
+        const status = req.query.status || ''
+        const search = req.query.search || "";
          const skip = (page - 1) * limit;
+         const query = {};
 
-         const orders = await Order.find()
+         if (search) {
+            query.$or = [
+                { 'orderId': { $regex: search, $options: 'i' } },
+                { 'userId.name': { $regex: search, $options: 'i' } },
+                { 'userId.email': { $regex: search, $options: 'i' } },
+            ];
+        }
+        if (status) {
+            query.status = status;
+        }
+         const orders = await Order.find(query)
             .populate('userId')
             .populate('orderedItems.product')
             .sort({ createdAt: -1 })
-            .skip(skip)
+                .skip(skip)
             .limit(limit);
 
-         const totalOrders = await Order.countDocuments();
+         const totalOrders = await Order.countDocuments(query);
         const totalPages = Math.ceil(totalOrders / limit);
-
-        console.log('Fetched Orders:', orders);
 
          return res.render('orders', {
            orders,
@@ -28,7 +38,9 @@ const getOrderList = async (req, res) => {
            limit,
            hasNextPage: page < totalPages,
            hasPrevPage: page > 1,
-           activePage: 'orders'
+           activePage: 'orders',
+           status,
+           search,
                 });
     
     } catch (error) {
@@ -40,9 +52,7 @@ const getOrderList = async (req, res) => {
 const getOrderDetailsPage = async (req, res) => {
 
     try {   
-        console.log("hii")
         const {orderId}= req.query;
-        console.log('dddddddddddddddddddddddd',orderId);
         const order = await Order.findOne({ orderId })
             .populate('userId')
             .populate({
@@ -147,20 +157,7 @@ const processReturnRequest = async (req, res) => {
 
       await order.save();
 
-      // Process wallet refund after product quantities are updated
-      const wallet = await Wallet.findOne({ userId: order.userId });
-      if (wallet && action === "approve") {
-        wallet.totalBalance += order.finalAmount;
-        wallet.transactions.push({
-          type: "Refund",
-          amount: order.finalAmount,
-          orderId: order.orderId,
-          status: "Completed",
-          description: `Order Return ${order.orderId}`,
-          date: new Date(),
-        });
-        await wallet.save();
-      }
+      // Process wallet refund after product quantities are update
       
       res.status(200).json({
         message: `Return request ${action}ed successfully`,

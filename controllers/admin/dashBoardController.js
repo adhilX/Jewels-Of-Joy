@@ -1,6 +1,5 @@
 const Product = require('../../models/productSchema');
 const Category = require('../../models/categorySchema');
-const Brand = require('../../models/brandSchema');
 const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
 
@@ -24,7 +23,7 @@ const loadDashboard = async (req, res) => {
             ]);
             
             totalSales = totalSales.length > 0 ? totalSales[0].totalSales : 0;
-            const totalUsers = await User.find().countDocuments();
+            const totalUsers = await User.find({isAdmin:false}).countDocuments();
             const totalOrders = await Order.find().countDocuments();
             const totalProducts = await Product.find().countDocuments();
 
@@ -59,36 +58,6 @@ const loadDashboard = async (req, res) => {
                     }
                 },
                 { $sort: { totalQuantity: -1 } },
-                { $limit: 10 }
-            ]);
-
-            // Get top 10 selling brands with date filter
-            const topBrands = await Order.aggregate([
-                { 
-                    $match: { 
-                        status: 'Delivered',
-                        createdAt: { $gte: startDate, $lte: endDate }
-                    } 
-                },
-                { $unwind: '$orderedItems' },
-                {
-                    $lookup: {
-                        from: 'products',
-                        localField: 'orderedItems.product',
-                        foreignField: '_id',
-                        as: 'product'
-                    }
-                },
-                { $unwind: '$product' },
-                {
-                    $group: {
-                        _id: '$product.brand',
-                        name: { $first: '$product.brand' },
-                        totalSales: { $sum: { $multiply: ['$orderedItems.quantity', '$orderedItems.price'] } },
-                        totalQuantity: { $sum: '$orderedItems.quantity' }
-                    }
-                },
-                { $sort: { totalSales: -1 } },
                 { $limit: 10 }
             ]);
 
@@ -293,7 +262,6 @@ const loadDashboard = async (req, res) => {
                     salesData,
                     categoryData,
                     topProducts,
-                    topBrands,
                     timeFrame
                 });
             }
@@ -306,7 +274,6 @@ const loadDashboard = async (req, res) => {
                 salesData,
                 categoryData,
                 topProducts,
-                topBrands,
                 timeFrame,
                 admin: true,
                 activePage:'dashboard'
@@ -375,91 +342,6 @@ const getTopCategories = async (req, res) => {
         res.json(topCategories);
     } catch (error) {
         console.error('Error getting top categories:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
-const getTopBrands = async (req, res) => {
-    try {
-        const timeFrame = req.query.timeFrame || 'monthly';
-        
-        // Calculate date range based on timeFrame
-        const endDate = new Date();
-        const startDate = new Date();
-
-        switch(timeFrame) {
-            case 'yearly':
-                startDate.setFullYear(startDate.getFullYear() - 5);
-                break;
-            case 'monthly':
-                startDate.setMonth(startDate.getMonth() - 11);
-                break;
-            case 'weekly':
-                startDate.setDate(startDate.getDate() - 90);
-                break;
-            default: // daily
-                startDate.setDate(startDate.getDate() - 30);
-        }
-
-        // First get all brands with their product counts
-        const brandsWithProducts = await Product.aggregate([
-            {
-                $group: {
-                    _id: '$brand',
-                    productCount: { $sum: 1 }
-                }
-            },
-            {
-                $project: {
-                    name: '$_id',
-                    productCount: 1,
-                    _id: 0
-                }
-            }
-        ]);
-
-        // Then get sales data for brands within the time period
-        const brandSales = await Order.aggregate([
-            { 
-                $match: { 
-                    status: 'Delivered',
-                    createdAt: { $gte: startDate, $lte: endDate }
-                } 
-            },
-            { $unwind: '$orderedItems' },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: 'orderedItems.product',
-                    foreignField: '_id',
-                    as: 'productInfo'
-                }
-            },
-            { $unwind: '$productInfo' },
-            {
-                $group: {
-                    _id: '$productInfo.brand',
-                    sales: { $sum: '$orderedItems.quantity' }
-                }
-            }
-        ]);
-
-        // Create a map of brand sales
-        const brandSalesMap = new Map(brandSales.map(item => [item._id, item.sales]));
-
-        // Combine and format the data
-        const topBrands = brandsWithProducts
-            .map(brand => ({
-                name: brand.name,
-                productCount: brand.productCount,
-                sales: brandSalesMap.get(brand.name) || 0
-            }))
-            .sort((a, b) => b.sales - a.sales)
-            .slice(0, 10);
-
-        res.json(topBrands);
-    } catch (error) {
-        console.error('Error getting top brands:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
@@ -776,7 +658,7 @@ const getDashboardData = async (req, res) => {
         ]);
         
         totalSales = totalSales.length > 0 ? totalSales[0].totalSales : 0;
-        const totalUsers = await User.find().countDocuments();
+        const totalUsers = await User.find({isAdmin:false}).countDocuments();
         const totalOrders = await Order.find().countDocuments();
         const totalProducts = await Product.find().countDocuments();
 
@@ -801,30 +683,6 @@ const getDashboardData = async (req, res) => {
             }},
             { $sort: { totalQuantity: -1 } },
             { $limit: 10 }
-        ]);
-
-        // Get top 10 brands by sales amount
-        const topBrands = await Order.aggregate([
-            { $match: { status: 'Delivered', createdAt: { $gte: startDate, $lte: endDate } } },
-            { $unwind: '$orderedItems' },
-            { $lookup: {
-                from: 'products',
-                localField: 'orderedItems.product',
-                foreignField: '_id',
-                as: 'product'
-            }},
-            { $unwind: '$product' },
-            { $group: {
-                _id: '$product.brand',
-                totalSales: { $sum: { $multiply: ['$orderedItems.quantity', '$orderedItems.price'] } }
-            }},
-            { $sort: { totalSales: -1 } },
-            { $limit: 10 },
-            { $project: {
-                name: '$_id',
-                totalSales: 1,
-                _id: 0
-            }}
         ]);
 
         // Get category data with product counts and sales
@@ -1032,7 +890,6 @@ const getDashboardData = async (req, res) => {
                 salesData,
                 categoryData,
                 topProducts,
-                topBrands,
                 timeFrame
             });
         }
@@ -1045,7 +902,6 @@ const getDashboardData = async (req, res) => {
             salesData,
             categoryData,
             topProducts,
-            topBrands,
             timeFrame
         });
     } catch (error) {
@@ -1060,7 +916,6 @@ module.exports = {
     getCategoryDistribution,
     getTopProducts,
     getTopCategories,
-    getTopBrands,
     getLedgerData,
     getDashboardData
 };

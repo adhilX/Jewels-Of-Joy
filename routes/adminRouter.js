@@ -10,6 +10,7 @@ const orderController = require('../controllers/admin/orderController')
 const couponController = require('../controllers/admin/couponController')
 const salesReportsController = require('../controllers/admin/salesReportsController')
 const dashBoardController = require('../controllers/admin/dashBoardController')
+const settingsController = require('../controllers/admin/settingsController')
 const multer = require('multer')
 const storage = require("../helpers/multer")
 const uploads = multer({storage:storage})
@@ -25,7 +26,7 @@ router.get('/sales-data',adminAuth,dashBoardController.getSalesData)
 router.get('/category-distribution',adminAuth,dashBoardController.getCategoryDistribution)
 router.get('/top-products',adminAuth,dashBoardController.getTopProducts)
 router.get('/top-categories',adminAuth,dashBoardController.getTopCategories)
-router.get('/top-brands',adminAuth,dashBoardController.getTopBrands)
+// router.get('/top-brands',adminAuth,dashBoardController.getTopBrands)
 router.get('/ledger-data',adminAuth,dashBoardController.getLedgerData)
 
 router.get('/login',adminController.loadlogin)
@@ -81,5 +82,10 @@ router.patch('/order/return/:orderId',adminAuth,orderController.processReturnReq
 //salesReport management
 router.get('/salesReport',adminAuth,salesReportsController.getSalesReports)
 router.get('/salesReport/download/:format',adminAuth,salesReportsController.downloadReport)
+
+//settings management
+router.get('/settings',adminAuth,settingsController.getSettings)
+router.post('/settings/cod',adminAuth,settingsController.changeCODoption)
+router.post('/settings/shipping-cost',adminAuth,settingsController.changeShippingCost)
 
 module.exports=router;

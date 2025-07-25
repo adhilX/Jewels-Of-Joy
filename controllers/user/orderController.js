@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const Settings = require('../../models/settingsSchema');
 
 const placeOrder = async (req, res) => {
     try {
@@ -126,10 +127,10 @@ const placeOrder = async (req, res) => {
 
         const finalAmount = totalAfterOffers - couponDiscount;
         const totalDiscount = bestOfferDiscount + couponDiscount;
-
+         const {shippingCost} = await Settings.findOne();
         // Calculate shipping
-        const freeShippingThreshold = 1000;
-        const shippingRate = 0
+        const freeShippingThreshold = 0;
+        const shippingRate = shippingCost;
         const shipping = finalAmount >= freeShippingThreshold ? 0 : shippingRate;
         const finalAmountWithShipping = finalAmount + shipping;
 
@@ -283,85 +284,6 @@ const placeOrder = async (req, res) => {
                 message: "Order placed successfully!",
                 orderId: newOrder.orderId,
             });
-        }else if(paymentMethod === "wallet"){
-
-             const wallet = await Wallet.findOne({ userId });
-            if (!wallet) {
-                return res.status(404).json({ error: 'Wallet not found.' });
-            }
-            if(wallet.totalBalance< finalAmountWithShipping){
-                return res.status(400).json({ success: false, message: "Insufficient wallet balance." });
-            }
-            
-console.log('coupon',couponDiscount)
-
-            const newOrder = new Order({
-                userId,
-                orderId,
-                orderedItems,
-                totalPrice: totalAmount,
-                discount: {
-                    bestOffer: bestOfferDiscount,
-                    coupon: couponDiscount,
-                    total: totalDiscount
-                },
-                finalAmount: finalAmountWithShipping,
-                couponApplied: !!coupon,
-                couponDetails: coupon ? { code: coupon.name, offerPrice: couponDiscount ,minimumPrice: coupon.minimumPrice} : null,
-                address: {
-                    name: address.name,
-                    addressType: address.addressType,
-                    city: address.city,
-                    pinCode: address.pinCode,
-                    landMark: address.landMark,
-                    state: address.state,
-                    phone: address.phone,
-                    altPhone: address.altPhone || null,
-                },
-                status: "Placed",
-                paymentMethod,
-                paymentStatus: "Paid",
-             });
-
-            // Save order to database
-            await newOrder.save();
-            if (coupon) {
-                await Coupon.findByIdAndUpdate(coupon._id, { $addToSet: { userId: userId } });  
-              }
-              req.session.appliedCoupon=null;
-
-            //decrease product quantity from database
-            for (const item of userCart.items) {
-                const product = await Product.findById(item.productId._id);
-                if (product) {
-                    product.quantity -= item.quantity;
-                    if (product.quantity < 0) {
-                        product.quantity = 0;
-                    }
-                    await product.save();
-                }
-            }
-            // Remove items from cart
-            await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } });
-
-            //decrease amount from wallet
-            wallet.totalBalance -= finalAmountWithShipping;
-            wallet.transactions.push({
-                type: 'Purchase',
-                amount: finalAmountWithShipping,
-                orderId: newOrder.orderId,
-                status: 'Completed',
-                description: 'Wallet payment for order',
-                date: new Date()
-            });
-            await wallet.save();
-            
-
-            res.json({
-                success: true,
-                message: "Order placed successfully!",
-                orderId: newOrder.orderId,
-            });
         }
     } catch (error) {
         console.error("Error placing order:", error);
@@ -470,8 +392,6 @@ const cancelOrder = async (req, res) => {
             userId
         }).populate('orderedItems.product');
 
-
-        console.log('orderrrrrrrrrrrrrrrrrrrrrr',JSON.stringify(order));
         if (!order) {
             return res.status(404).json({
                 success: false,
@@ -489,48 +409,6 @@ const cancelOrder = async (req, res) => {
         order.cancelOrder.reason = reason;
         order.status = 'Cancelled'; 
 
-        // Refund logic
-        if (['ONLINE', 'wallet'].includes(order.paymentMethod)) {
-            const refundAmount = order.finalAmount;
-
-            // Fetch or create wallet
-            let wallet = await Wallet.findOne({ userId });
-            if (!wallet) {
-                wallet = new Wallet({
-                    userId,
-                    totalBalance: refundAmount,
-                    transactions: [{
-                        type: 'Refund',
-                        amount: refundAmount,
-                        orderId,
-                        status: 'Completed',
-                        description: `Refund for cancelled order #${orderId}`,
-                        date: new Date()
-                    }]
-                });
-            } else {
-                 wallet.totalBalance += refundAmount;
-                wallet.transactions.push({
-                    type: 'Refund',
-                    amount: refundAmount,
-                    orderId,
-                    status: 'Completed',
-                    description: `Refund for cancelled order #${orderId}`,
-                    date: new Date()
-                });
-            }
-
-            await wallet.save();
-
-            // Update refund details in the order
-            order.paymentStatus = 'Refunded';
-            order.refundDetails = {
-                amount: refundAmount,
-                status: 'Completed',
-                processedAt: new Date(),
-                method: 'wallet'
-            };
-        }
 
         // Return items to stock
         for (const item of order.orderedItems) {
@@ -543,15 +421,11 @@ const cancelOrder = async (req, res) => {
 
         await order.save();  
 
-         const message = order.paymentStatus === 'Refunded'
-            ? `Order cancelled successfully. ₹${order.refundDetails.amount} has been refunded to your wallet.`
-            : 'Order cancelled successfully.';
+         const message = 'Order cancelled successfully.';
 
         res.json({
             success: true,
             message,
-            refunded: order.paymentStatus === 'Refunded',
-            refundAmount: order.refundDetails?.amount || 0
         });
     } catch (error) {
         console.error('Cancel order error:', error);
@@ -579,7 +453,6 @@ const cancelOrder = async (req, res) => {
 
             const order = await Order.findOne({ orderId: orderId, userId: userId });
 
-            console.log('orderrerrrrrrrrrrrrrr',order);
 
             if (!order) {
                 return res.status(404).json({
@@ -629,8 +502,6 @@ const cancelOrder = async (req, res) => {
             
         }
     }
-
-
 
     const downloadInvoice = async (req, res) => {
         try {

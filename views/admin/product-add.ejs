@@ -450,11 +450,12 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
 <%- include('../partials/admin/footer') %>
+<!-- <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script> -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.7.2/cropper.min.js"></script>
+ <!-- <script src="https://unpkg.com/cropperjs"></script> -->
 
 <script>
-
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('addProductForm');
         const dropZone = document.getElementById('dropZone');
@@ -540,7 +541,6 @@ function showCropper(imageSrc, index) {
     currentFileIndex = index;
 
     if (cropper) cropper.destroy();
-
     cropper = new Cropper(cropperImage, {
         aspectRatio: 1,
         viewMode: 1,

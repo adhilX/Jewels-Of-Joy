@@ -4,7 +4,7 @@ const Brand = require("../../models/brandSchema");
 const mongoose = require('mongoose')
 const fs = require("fs");
 const path = require("path");
-const sharp = require("sharp");
+const { uploadToCloudinary, deleteFromCloudinary } = require("../../utils/cloudinaryUpload");
 const product = require("../../models/productSchema");
  
 const getProductAddPage = async (req, res) => {
@@ -40,28 +40,16 @@ const addProducts = async (req, res) => {
 
     const processedImages = [];
     if (req.files && req.files.length > 0) {
-      const uploadDirectory = path.join("public", "uploads", "product-images");
-
-      if (!fs.existsSync(uploadDirectory)) {
-        fs.mkdirSync(uploadDirectory, { recursive: true });
-      }
-
       for (let i = 0; i < req.files.length; i++) {
-        const originalImagePath = req.files[i].path;
-        const fileExtension = path.extname(req.files[i].originalname);
-        const uniqueFileName = `${Date.now()}-${i}${fileExtension}`;
-        const resizedImagePath = path.join(uploadDirectory, uniqueFileName);
-
-        await sharp(originalImagePath)
-          .resize({ width: 440, height: 440, fit: sharp.fit.cover })
-          .sharpen({ sigma: 1.5 })
-          .jpeg({ quality: 95 })
-          .toColourspace('srgb')
-          .toFile(resizedImagePath);
-
-        processedImages.push(`/uploads/product-images/${uniqueFileName}`);
+        const originalImagePath = req.files[i]
+        console.log(originalImagePath)
+        // Upload to Cloudinary
+        const cloudinaryUrl = await uploadToCloudinary(originalImagePath);
+        processedImages.push(cloudinaryUrl.secure_url);
       }
     }
+
+    console.log('images',processedImages)
 
     const category = await Category.findOne({ name: productData.category });
     if (!category) {
@@ -239,9 +227,6 @@ const editProducts = async (req, res) => {
     const croppedImagesCount = parseInt(data.croppedImagesCount) || 0;
     
     if (croppedImagesCount > 0) {
-      const uploadDir = path.join("public", "uploads", "product-images");
-      await fs.promises.mkdir(uploadDir, { recursive: true });
-
       // Process each image separately
       for (let i = 0; i < croppedImagesCount; i++) {
         const base64Image = data[`croppedImage${i}`];
@@ -249,14 +234,14 @@ const editProducts = async (req, res) => {
           const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, '');
           const imageBuffer = Buffer.from(base64Data, 'base64');
           const uniqueName = `${Date.now()}-${i}.jpeg`;
-          const imagePath = path.join(uploadDir, uniqueName);
+          const tempPath = path.join(require('os').tmpdir(), uniqueName);
 
-          await sharp(imageBuffer)
-            .resize({ width: 440, height: 440, fit: sharp.fit.cover })
-            .jpeg({ quality: 80 })
-            .toFile(imagePath);
+          // Write buffer to temporary file
+          await fs.promises.writeFile(tempPath, imageBuffer);
 
-          newImages.push(`/uploads/product-images/${uniqueName}`);
+          // Upload to Cloudinary
+          const cloudinaryUrl = await uploadToCloudinary(tempPath, 'products');
+          newImages.push(cloudinaryUrl);
         }
       }
     }
@@ -282,7 +267,7 @@ const editProducts = async (req, res) => {
       // brand: data.brand,
       category: category._id,
       regularPrice: data.regularPrice,
-      salePrice: data.salePrice,
+      salePrice: data.regularPrice,
       quantity: data.quantity,
       productImage: finalImages,
     };

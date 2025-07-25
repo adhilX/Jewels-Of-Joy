@@ -102,7 +102,7 @@
                         </article>
                     </div>
                 </div>
-                <div class="col-xl-6">
+                <!-- <div class="col-xl-6">
                     <div class="card mb-4">
                         <article class="card-body">
                             <h5 class="card-title">Top 10 Brands</h5>
@@ -111,7 +111,7 @@
                             </div>
                         </article>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="row">
@@ -158,7 +158,7 @@
                         </article>
                     </div>
                 </div>
-                <div class="col-xl-4">
+                <!-- <div class="col-xl-4">
                     <div class="card mb-4">
                         <article class="card-body">
                             <h5 class="card-title">Top Brands</h5>
@@ -172,13 +172,12 @@
                                         </tr>
                                     </thead>
                                     <tbody id="topBrandsTable">
-                                        <!-- Data will be populated by JavaScript -->
                                     </tbody>
                                 </table>
                             </div>
                         </article>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -196,7 +195,6 @@
                 // Initial data
                 const initialData = {
                     topProducts: <%- JSON.stringify(topProducts) %>,
-                    topBrands: <%- JSON.stringify(topBrands) %>,
                     categoryData: <%- JSON.stringify(categoryData) %>,
                     salesData: <%- JSON.stringify(salesData) %>
                 };
@@ -279,12 +277,12 @@
                     });
 
                     // Initialize Top Brands Chart
-                    const brandsCtx = document.getElementById('topBrandsChart').getContext('2d');
-                    brandsChart = new Chart(brandsCtx, {
-                        type: 'bar',
-                        data: getBrandsChartData(data.topBrands),
-                        options: getBrandsChartOptions()
-                    });
+                    // const brandsCtx = document.getElementById('topBrandsChart').getContext('2d');
+                    // brandsChart = new Chart(brandsCtx, {
+                    //     type: 'bar',
+                    //     data: getBrandsChartData(data.topBrands),
+                    //     options: getBrandsChartOptions()
+                    // });
 
                     // Update tables
                     updateTables(data);
@@ -339,18 +337,18 @@
                     };
                 }
 
-                function getBrandsChartData(brands) {
-                    return {
-                        labels: brands.map(item => item.name),
-                        datasets: [{
-                            label: 'Total Sales (₹)',
-                            data: brands.map(item => item.totalSales),
-                            backgroundColor: chartColors[1],
-                            borderColor: chartColors[1],
-                            borderWidth: 1
-                        }]
-                    };
-                }
+                // function getBrandsChartData(brands) {
+                //     return {
+                //         labels: brands.map(item => item.name),
+                //         datasets: [{
+                //             label: 'Total Sales (₹)',
+                //             data: brands.map(item => item.totalSales),
+                //             backgroundColor: chartColors[1],
+                //             borderColor: chartColors[1],
+                //             borderWidth: 1
+                //         }]
+                //     };
+                // }
 
                 function getSalesChartOptions() {
                     return {
@@ -432,23 +430,23 @@
                     };
                 }
 
-                function getBrandsChartOptions() {
-                    return {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    };
-                }
+                // function getBrandsChartOptions() {
+                //     return {
+                //         responsive: true,
+                //         maintainAspectRatio: false,
+                //         plugins: {
+                //             legend: {
+                //                 display: true,
+                //                 position: 'top'
+                //             }
+                //         },
+                //         scales: {
+                //             y: {
+                //                 beginAtZero: true
+                //             }
+                //         }
+                //     };
+                // }
 
                 function updateTables(data) {
                     // Update Top Products Table
@@ -473,14 +471,14 @@
                     `).join('');
 
                     // Update Top Brands Table
-                    const topBrandsTable = document.getElementById('topBrandsTable');
-                    topBrandsTable.innerHTML = data.topBrands.map(brand => `
-                        <tr>
-                            <td>${brand.name}</td>
-                            <td>${brand.totalQuantity}</td>
-                            <td>₹${brand.totalSales}</td>
-                        </tr>
-                    `).join('');
-                }
+                //     const topBrandsTable = document.getElementById('topBrandsTable');
+                //     topBrandsTable.innerHTML = data.topBrands.map(brand => `
+                //         <tr>
+                //             <td>${brand.name}</td>
+                //             <td>${brand.totalQuantity}</td>
+                //             <td>₹${brand.totalSales}</td>
+                //         </tr>
+                //     `).join('');
+                }yyy
             });
         </script>

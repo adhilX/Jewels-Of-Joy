@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>ShutterCart Dashboard</title>
+    <title>Jewels Of Joy Dashboard</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,13 +12,15 @@
     <meta property="og:url" content="">
     <meta property="og:image" content="">
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="../assets/images/ShutterCart Fav icon.jpg">
+    <link rel="shortcut icon" type="image/x-icon" href="/landing-imags/Jewels-of-joy-logo-while.png">
     <!-- Template CSS -->
     <link href="../assets/css/main.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
     <link rel="stylesheet" href="../assets/css/sweetalert-custom.css" type="text/css" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">          -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/0.7.2/cropper.css" integrity="sha512-+HIeCIhUsQHrbY9Wu6C2xXl+oUNZkCCUvl/S1gECtwUSWyyiBCxUX65z9ORrbMmZU4hJDAvY4Wb6Asf9thuJEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="../backend/css/admin-styles.css" rel="stylesheet" type="text/css" />
  </head>
 
@@ -27,7 +29,7 @@
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
             <a href="/admin" class="brand-wrap">
-                <img src="/assets/images/logo/shuttercart-logo.png" class="shuttercart" alt="Evara Dashboard">
+                <img src="/landing-imags/Jewels-of-joy-logo-tr.png" class="shuttercart" alt="Evara Dashboard">
             </a>
             <div>
                 <!-- Other content -->
@@ -123,24 +125,15 @@
                 </li> -->
             </ul>
             <hr>
-            <!-- <ul class="menu-aside">
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="#"> <i class="icon material-icons md-settings"></i>
+            <ul class="menu-aside">
+                <li class="menu-item <%= activePage === 'settings' ? 'active' : '' %>">
+                    <a class="menu-link" href="/admin/settings"> <i class="icon material-icons md-settings"></i>
                         <span class="text">Settings</span>
-                    </a>
-                    <div class="submenu">
-                        <a href="page-settings-1.html">Setting sample 1</a>
-                        <a href="page-settings-2.html">Setting sample 2</a>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a class="menu-link" href="page-blank.html"> <i class="material-icons md-local_offer"></i>
-                        <span class="text"> Starter page </span>
                     </a>
                 </li>
             </ul>
             <br>
-            <br> -->
+            <br>
         </nav>
     </aside>
     <main class="main-wrap">

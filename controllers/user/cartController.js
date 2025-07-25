@@ -1,5 +1,6 @@
 const  Cart = require('../../models/cartSchema')
-const  Product = require('../../models/productSchema')
+const  Product = require('../../models/productSchema');
+const Settings = require('../../models/settingsSchema');
 const User= require('../../models/userSchema')
 
 const addToCart = async (req, res) => {
@@ -63,10 +64,10 @@ const addToCart = async (req, res) => {
 
         const subtotal = calculateSubtotal(cart.items);
         const discount = calculateDiscount(cart.items);
-        const shipping = calculateShipping(subtotal - discount);
-        const totalPrice = calculateTotalPrice(subtotal, discount, shipping);
+        const shippingCost = await calculateShipping();
+        const totalPrice = calculateTotalPrice(subtotal, discount, shippingCost);
 
-        return res.status(200).json({ success: true, cart, subtotal, discount, shipping, totalPrice , quantity:existingItem});
+        return res.status(200).json({ success: true, cart, subtotal, discount, shippingCost, totalPrice , quantity:existingItem});
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
@@ -84,13 +85,12 @@ function calculateDiscount(cartItems) {
     }, 0);
 }
 
-function calculateShipping(totalPrice) {
-    const freeShippingThreshold = 1000;  
-    const shippingRate = 0
-    return totalPrice >= freeShippingThreshold ? 0 : shippingRate;
+async function calculateShipping() {
+    const {shippingCost} =   await Settings.findOne();
+    return shippingCost;
 }
-function calculateTotalPrice(subtotal, discount, shipping) {
-    return subtotal - discount + shipping;
+function calculateTotalPrice(subtotal, discount, shippingCost) {
+    return subtotal - discount + shippingCost;
 }
 function calculateSubtotal(cartItems) {
     return cartItems.reduce((sum, item) => {
@@ -124,6 +124,7 @@ const getCart = async (req, res) => {
         let subtotal = 0;
         let totalDiscount = 0;
 
+        const {shippingCost,COD_enabled} = await Settings.findOne();
         // Calculate prices and offers for each item
         const cartItemsWithOffers = cart.items.map(item => {
             if (item.productId) {
@@ -136,7 +137,7 @@ const getCart = async (req, res) => {
                 const quantity = item.quantity;
                 const discount = (originalPrice - salePrice) * quantity;
 
-                subtotal += originalPrice * quantity;
+                subtotal += originalPrice * quantity 
                 totalDiscount += discount;
 
                 return {
@@ -148,7 +149,8 @@ const getCart = async (req, res) => {
             return item;
         });
 
-        const totalAmount = subtotal - totalDiscount;
+
+            const totalAmount = (subtotal - totalDiscount)+shippingCost;
 
         res.render('cart', {
             user: userDetails,
@@ -156,7 +158,9 @@ const getCart = async (req, res) => {
             cartSubtotal: subtotal,
             discount: totalDiscount,
             totalAmount: totalAmount,
-            countItems: cart.items.length
+            countItems: cart.items.length,
+            shippingCost,
+            COD_enabled
         });
     } catch (error) {
         console.error(error);
